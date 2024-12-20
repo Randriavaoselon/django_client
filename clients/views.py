@@ -10,6 +10,20 @@ import multiprocessing
 import os
 import signal
 
+def discover_server_ip(broadcast_port=54321):
+    """Fonction pour découvrir l'adresse IP du serveur via broadcast."""
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as discovery_socket:
+            discovery_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            discovery_socket.bind(("", broadcast_port))  # Écouter sur toutes les interfaces
+            print("En attente de l'adresse IP du serveur...")
+            message, server_address = discovery_socket.recvfrom(1024)  # Attente du message du serveur
+            print(f"Adresse IP du serveur détectée : {server_address[0]}")
+            return server_address[0]
+    except Exception as e:
+        print(f"Erreur lors de la découverte du serveur : {e}")
+        return None
+
 def stream_screen(host, port):
     """Fonction pour démarrer le socket client."""
     try:
@@ -63,10 +77,12 @@ def stream_screen(host, port):
 
 def start_client_view(request):
     """Vue Django pour démarrer automatiquement le socket client en arrière-plan."""
+    # Découvrir dynamiquement l'adresse IP du serveur
+    HOST = discover_server_ip()
+    if not HOST:
+        return JsonResponse({"error": "Impossible de découvrir l'adresse IP du serveur."})
 
-    # Adresse et port du serveur
-    HOST = "192.168.137.69"  # Remplacez par l'adresse de votre serveur
-    PORT = 12345
+    PORT = 12345  # Port fixe du serveur
 
     # Lancer le socket client dans un processus séparé
     client_process = multiprocessing.Process(target=stream_screen, args=(HOST, PORT))
@@ -85,6 +101,9 @@ def start_client_view(request):
 # import mss
 # from pynput.mouse import Controller
 # import threading
+# import multiprocessing
+# import os
+# import signal
 
 # def stream_screen(host, port):
 #     """Fonction pour démarrer le socket client."""
@@ -134,15 +153,19 @@ def start_client_view(request):
 
 #     except Exception as e:
 #         print(f"Erreur : {e}")
+#         # Assurez-vous que le processus se termine correctement
+#         os.kill(os.getpid(), signal.SIGTERM)
 
 # def start_client_view(request):
-#     """Vue Django pour démarrer automatiquement le socket client."""
+#     """Vue Django pour démarrer automatiquement le socket client en arrière-plan."""
+
 #     # Adresse et port du serveur
-#     HOST = "192.168.137.69"  # Remplacez par l'adresse de votre serveur, ici localhost
+#     HOST = "192.168.0.102"  # Remplacez par l'adresse de votre serveur
 #     PORT = 12345
 
-#     # Lancer le socket client dans un thread séparé
-#     client_thread = threading.Thread(target=stream_screen, args=(HOST, PORT), daemon=True)
-#     client_thread.start()
+#     # Lancer le socket client dans un processus séparé
+#     client_process = multiprocessing.Process(target=stream_screen, args=(HOST, PORT))
+#     client_process.daemon = True  # Assurez-vous que ce processus se termine si le programme principal se termine
+#     client_process.start()
 
-#     return JsonResponse({"message": "Socket client démarré automatiquement !"})
+#     return JsonResponse({"message": "Socket client démarré en arrière-plan !"})
