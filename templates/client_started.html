@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue Dans nos monde 🎃🎃!!!</title>
+  <style>
+    /* styles.css */
+        body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Courier New', Courier, monospace;
+        color: #00ff00;
+        background: black;
+        overflow: hidden;
+        }
+
+        .hacker-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 100vh;
+        text-align: center;
+        position: relative;
+        }
+
+        .background-glitch {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, transparent, #00ff00, transparent);
+        mix-blend-mode: screen;
+        animation: glitch 3s infinite;
+        z-index: -1;
+        }
+
+        @keyframes glitch {
+        0% { transform: translate(0, 0); }
+        20% { transform: translate(-5px, -5px); }
+        40% { transform: translate(5px, 5px); }
+        60% { transform: translate(-5px, 5px); }
+        80% { transform: translate(5px, -5px); }
+        100% { transform: translate(0, 0); }
+        }
+
+        .welcome-text h1 {
+        font-size: 4rem;
+        text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+        animation: text-glitch 2s infinite;
+        }
+
+        .welcome-text p {
+        font-size: 1.5rem;
+        text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+        margin-top: 20px;
+        }
+
+        @keyframes text-glitch {
+        0% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00; }
+        50% { text-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00; }
+        100% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00; }
+        }
+
+  </style>
+</head>
+<body>
+  <div class="hacker-container">
+    <div class="background-glitch"></div>
+    <div class="welcome-text">
+      <h1 data-text="Bienvenue, Je te vois...">Je te vois 🤡🤡🤡...</h1>
+      <p>Arrêtez votre travail 👈👈👈</p>
+    </div>
+  </div>
+  <script>
+    // script.js
+        document.addEventListener('DOMContentLoaded', () => {
+        const text = document.querySelector('.welcome-text h1');
+        const originalText = text.getAttribute('data-text');
+        let scrambled = '';
+        let counter = 0;
+
+        const hackerEffect = setInterval(() => {
+            scrambled = originalText
+            .split('')
+            .map((char, i) => {
+                if (i < counter) return char;
+                return String.fromCharCode(33 + Math.random() * 94);
+            })
+            .join('');
+            text.textContent = scrambled;
+
+            if (counter++ >= originalText.length) {
+            clearInterval(hackerEffect);
+            text.textContent = originalText;
+            }
+        }, 100);
+        });
+
+  </script>
+</body>
+</html>
+

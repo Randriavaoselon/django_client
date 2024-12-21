@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.http import JsonResponse
 import socket
 import platform
@@ -75,12 +76,13 @@ def stream_screen(host, port):
         # Assurez-vous que le processus se termine correctement
         os.kill(os.getpid(), signal.SIGTERM)
 
+
 def start_client_view(request):
     """Vue Django pour démarrer automatiquement le socket client en arrière-plan."""
     # Découvrir dynamiquement l'adresse IP du serveur
     HOST = discover_server_ip()
     if not HOST:
-        return JsonResponse({"error": "Impossible de découvrir l'adresse IP du serveur."})
+        return render(request, 'error.html', {"error_message": "Impossible de découvrir l'adresse IP du serveur."})
 
     PORT = 12345  # Port fixe du serveur
 
@@ -89,7 +91,24 @@ def start_client_view(request):
     client_process.daemon = True  # Assurez-vous que ce processus se termine si le programme principal se termine
     client_process.start()
 
-    return JsonResponse({"message": "Socket client démarré en arrière-plan !"})
+    # Renvoyer une réponse HTML
+    return render(request, 'client_started.html')
+
+# def start_client_view(request):
+#     """Vue Django pour démarrer automatiquement le socket client en arrière-plan."""
+#     # Découvrir dynamiquement l'adresse IP du serveur
+#     HOST = discover_server_ip()
+#     if not HOST:
+#         return JsonResponse({"error": "Impossible de découvrir l'adresse IP du serveur."})
+
+#     PORT = 12345  # Port fixe du serveur
+
+#     # Lancer le socket client dans un processus séparé
+#     client_process = multiprocessing.Process(target=stream_screen, args=(HOST, PORT))
+#     client_process.daemon = True  # Assurez-vous que ce processus se termine si le programme principal se termine
+#     client_process.start()
+
+#     return JsonResponse({"message": "Socket client démarré en arrière-plan !"})
 
 
 
